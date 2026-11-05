@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4418eb38a195f56488aeafbefdf7ca8b, type: 3}
+  m_Name: PlayerSpriteSet
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpriteSet
+  emptyHands:
+    up: {fileID: 21300000, guid: 7ef0327ff5b87084fa46d543d8ac8e42, type: 3}
+    down: {fileID: 21300000, guid: f17bd53977245784ba1ba171b9ef5576, type: 3}
+    left: {fileID: 21300000, guid: 371b7ab42fe475b41afc6eb3fc484a62, type: 3}
+    right: {fileID: 21300000, guid: b459c9287d8ba72408af0bac1b499a95, type: 3}
+  hoe:
+    up: {fileID: 21300000, guid: 81a91c1d542941d449054cfb25329c88, type: 3}
+    down: {fileID: 21300000, guid: 3948961174810ef4b9c537e80d3e61ed, type: 3}
+    left: {fileID: 21300000, guid: 12b331b45cd14484bbc774a908718c76, type: 3}
+    right: {fileID: 21300000, guid: 630787e2e4fe3f34bab582727107bbed, type: 3}
+  seeds:
+    up: {fileID: 21300000, guid: 3e3a29f7b1cc9f540b03dede253f35e4, type: 3}
+    down: {fileID: 21300000, guid: 8118de55348232d4499f52954c3c1322, type: 3}
+    left: {fileID: 21300000, guid: c21e856c4e4a4ba479153e3f6e68347a, type: 3}
+    right: {fileID: 21300000, guid: 00d9a954f0984df4eb24222c5fa052c0, type: 3}
+  wateringCan:
+    up: {fileID: 21300000, guid: d72fb6b27222e9f4394ae1f92f699bcb, type: 3}
+    down: {fileID: 21300000, guid: 4cee994503cd06948b349e0253669442, type: 3}
+    left: {fileID: 21300000, guid: bf72ffb7fa12dad4ebb832ef1cf43c68, type: 3}
+    right: {fileID: 21300000, guid: 78358710fba07a348a5669550e596438, type: 3}
+  shovel:
+    up: {fileID: 21300000, guid: abc53f88f6834b84b92610e9e8221caa, type: 3}
+    down: {fileID: 21300000, guid: ef82a016143b4fe499456e6976637c10, type: 3}
+    left: {fileID: 21300000, guid: 0f704349a7c781d40b4f45668a3821ea, type: 3}
+    right: {fileID: 21300000, guid: 5567a4d6573a5344584c342f30646076, type: 3}
+  carrot:
+    up: {fileID: 21300000, guid: 13afe22b317b53e469c5771f13cec5de, type: 3}
+    down: {fileID: 21300000, guid: db0f1d96eeb0a04418c9d19c8807f134, type: 3}
+    left: {fileID: 21300000, guid: bcdfcec283e66f9498d2468ca75cb953, type: 3}
+    right: {fileID: 21300000, guid: 76f2113e16356d242ae627facd44637f, type: 3}

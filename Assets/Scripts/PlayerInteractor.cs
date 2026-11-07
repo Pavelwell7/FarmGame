@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,7 @@ using UnityEngine;
 /// курсор на этой клетке, расстояние до её центра не больше maxDistance, между ногами и целью нет препятствия.
 /// Точка ног - transform.position персонажа (pivot картинки стоит у ног) или feetPoint, если задан.
 /// Направление берётся из PlayerMovement, предмет - из InventoryModel.
+/// Зрелая морковь в соседних по стороне клетках подсвечивается автоматически (без курсора и взгляда).
 /// </summary>
 public class PlayerInteractor : MonoBehaviour
 {
@@ -23,8 +25,15 @@ public class PlayerInteractor : MonoBehaviour
 
     private const float DistanceTolerance = 0.0001f;
 
-    private Transform highlight;
+    private static readonly Direction4[] AllDirections =
+    {
+        Direction4.Up, Direction4.Down, Direction4.Left, Direction4.Right
+    };
+
     private readonly GroundTarget groundTarget = new GroundTarget();
+    private readonly List<Transform> highlights = new List<Transform>();
+    private int highlightsUsed;
+    private Sprite frameSprite;
     private string debug = "";
     private GUIStyle debugStyle;
 
@@ -48,17 +57,23 @@ public class PlayerInteractor : MonoBehaviour
         if (obstacleMask.value == 0)
             Debug.LogWarning("PlayerInteractor: Obstacle Mask пуст, заборы и стены не будут блокировать действие.", this);
 
-        CreateHighlight();
+        frameSprite = CreateFrameSprite();
     }
 
     private void OnDisable()
     {
-        if (highlight != null) highlight.gameObject.SetActive(false);
-        if (promptHud != null) promptHud.SetPrompt(null);
+        HideAll();
     }
 
     private void Update()
     {
+        // Пока открыто окно (сон), мир не получает ввод и подсветки нет.
+        if (InputGate.IsBlocked)
+        {
+            HideAll();
+            return;
+        }
+
         IInteractable target = FindTarget();
 
         // Условия проверяются заново в момент нажатия.
@@ -67,6 +82,13 @@ public class PlayerInteractor : MonoBehaviour
             string message = target.Interact(inventory);
             if (!string.IsNullOrEmpty(message))
                 promptHud.ShowMessage(message);
+
+            // Действие могло открыть окно сна.
+            if (InputGate.IsBlocked)
+            {
+                HideAll();
+                return;
+            }
 
             target = FindTarget(); // сразу обновить подсветку и текст
         }
@@ -106,7 +128,7 @@ public class PlayerInteractor : MonoBehaviour
         IInteractable target = InteractableRegistry.Get(targetCell);
         if (target == null)
         {
-            // Нет грядки/колодца: возможно, это обычная земля (для случайного полива).
+            // Нет грядки/колодца/кровати: возможно, это обычная земля (для случайного полива).
             GroundArea ground = GroundArea.Find(center);
             if (ground == null)
                 return Fail("в клетке-цели нет ни грядки, ни земли");
@@ -151,30 +173,87 @@ public class PlayerInteractor : MonoBehaviour
 
     private void UpdatePresentation(IInteractable target)
     {
+        highlightsUsed = 0;
+
+        // 1. Автоподсветка зрелой моркови в соседних по стороне клетках в пределах дистанции.
+        Vector2 feet = FeetPosition;
+        Vector2Int feetCell = FarmGrid.WorldToCell(feet);
+
+        foreach (Direction4 direction in AllDirections)
+        {
+            Vector2Int cell = feetCell + FarmGrid.DirectionToOffset(direction);
+            IInteractable neighbor = InteractableRegistry.Get(cell);
+            IAutoHighlight auto = neighbor as IAutoHighlight;
+
+            if (auto == null || !auto.IsAutoHighlighted)
+                continue;
+
+            Vector2 center = FarmGrid.CellCenter(cell);
+            if (Vector2.Distance(feet, center) > maxDistance + DistanceTolerance)
+                continue;
+
+            if (IsBlocked(feet, center, neighbor.Root))
+                continue;
+
+            ShowHighlightAt(cell);
+        }
+
+        // 2. Рамка цели по предмету (вспашка, посадка, полив посева).
         if (target != null && target.ShowsHighlight(inventory))
-        {
-            highlight.position = FarmGrid.CellCenter(target.Cell);
-            highlight.gameObject.SetActive(true);
-        }
-        else
-        {
-            highlight.gameObject.SetActive(false);
-        }
+            ShowHighlightAt(target.Cell);
+
+        for (int i = highlightsUsed; i < highlights.Count; i++)
+            highlights[i].gameObject.SetActive(false);
 
         promptHud.SetPrompt(target != null ? target.GetPrompt(inventory) : null);
     }
 
-    private void CreateHighlight()
+    private void ShowHighlightAt(Vector2Int cell)
+    {
+        Vector2 position = FarmGrid.CellCenter(cell);
+
+        // Одна рамка на клетку, без дублей.
+        for (int i = 0; i < highlightsUsed; i++)
+        {
+            if ((Vector2)highlights[i].position == position)
+                return;
+        }
+
+        while (highlights.Count <= highlightsUsed)
+            highlights.Add(CreateHighlight());
+
+        Transform frame = highlights[highlightsUsed];
+        highlightsUsed++;
+
+        frame.position = position;
+        frame.gameObject.SetActive(true);
+    }
+
+    private void HideAll()
+    {
+        foreach (Transform frame in highlights)
+        {
+            if (frame != null)
+                frame.gameObject.SetActive(false);
+        }
+
+        highlightsUsed = 0;
+
+        if (promptHud != null)
+            promptHud.SetPrompt(null);
+    }
+
+    private Transform CreateHighlight()
     {
         var go = new GameObject("TargetHighlight");
-        highlight = go.transform;
 
         var renderer = go.AddComponent<SpriteRenderer>();
-        renderer.sprite = CreateFrameSprite();
+        renderer.sprite = frameSprite;
         renderer.color = new Color(1f, 0.95f, 0.3f, 1f);
         renderer.sortingOrder = 2;
 
         go.SetActive(false);
+        return go.transform;
     }
 
     /// <summary>Квадратная рамка 1x1 единица, создаётся кодом, отдельный рисунок не нужен.</summary>
@@ -217,7 +296,7 @@ public class PlayerInteractor : MonoBehaviour
             debugStyle.normal.textColor = Color.yellow;
         }
 
-        GUI.Label(new Rect(10f, 10f, 1000f, 200f), debug, debugStyle);
+        GUI.Label(new Rect(10f, 70f, 1000f, 200f), debug, debugStyle);
     }
 
     // В окне Scene (персонаж выделен, идёт игра): жёлтая клетка-цель и линия от ног.

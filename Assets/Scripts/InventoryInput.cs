@@ -20,7 +20,10 @@ public class InventoryInput : MonoBehaviour
 
     private void Update()
     {
-        // TODO этап 5: не принимать выбор, пока открыто окно сна.
+        // Пока открыто окно сна, выбор предметов заблокирован.
+        if (InputGate.IsBlocked)
+            return;
+
         for (int i = 0; i < InventoryModel.Slots.Length; i++)
         {
             if (WasPressed(i))

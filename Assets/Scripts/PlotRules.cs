@@ -11,7 +11,7 @@ public enum PlotState
 }
 
 /// <summary>
-/// Что можно сделать с грядкой. Сбор добавим на этапе 5.
+/// Что можно сделать с грядкой.
 /// </summary>
 public enum PlotAction
 {
@@ -20,7 +20,8 @@ public enum PlotAction
     Plant,          // посадить: S1 -> S2, семена минус 1
     Water,          // лейка: S0/S1 вода -1; S2 -> S3 вода -1; S3 вода -1
     ClearTilled,    // лопата на S1: S1 -> S0, семена не выдаются
-    RemoveSeedling  // лопата на S2/S3: -> S0, семя возвращается
+    RemoveSeedling, // лопата на S2/S3: -> S0, семя возвращается
+    Harvest         // S4 с любым предметом: морковь +1, грядка -> S1
 }
 
 /// <summary>
@@ -34,6 +35,10 @@ public static class PlotRules
     {
         switch (state)
         {
+            case PlotState.Mature:
+                // Сбор важнее любого инструмента и ничего не расходует.
+                return PlotAction.Harvest;
+
             case PlotState.Normal:
                 if (item == ItemType.Hoe) return PlotAction.Till;
                 if (item == ItemType.WateringCan) return PlotAction.Water; // полив пустой земли допустим
@@ -53,5 +58,19 @@ public static class PlotRules
         }
 
         return PlotAction.None;
+    }
+
+    /// <summary>
+    /// Результат сна для грядки (ТЗ, раздел 6):
+    /// S0 -> S0, S1 -> S0, S2 -> S2, S3 -> S4, S4 -> S4.
+    /// </summary>
+    public static PlotState AfterSleep(PlotState state)
+    {
+        switch (state)
+        {
+            case PlotState.Tilled: return PlotState.Normal;
+            case PlotState.PlantedWatered: return PlotState.Mature;
+            default: return state;
+        }
     }
 }

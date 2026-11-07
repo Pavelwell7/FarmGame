@@ -11,6 +11,7 @@ public class PromptHud : MonoBehaviour
 
     private Text promptText;
     private Text messageText;
+    private Text dayText;
     private float messageTimer;
 
     private void Awake()
@@ -26,6 +27,12 @@ public class PromptHud : MonoBehaviour
         messageTimer -= Time.deltaTime;
         if (messageTimer <= 0f)
             messageText.gameObject.SetActive(false);
+    }
+
+    /// <summary>Показать номер дня в левом верхнем углу.</summary>
+    public void SetDay(int day)
+    {
+        dayText.text = "День " + day;
     }
 
     /// <summary>Показать подсказку действия. null или пустая строка скрывает её.</summary>
@@ -68,6 +75,17 @@ public class PromptHud : MonoBehaviour
 
         promptText.gameObject.SetActive(false);
         messageText.gameObject.SetActive(false);
+
+        dayText = CreateText("Day", canvasObject.transform, 40, Color.white, 0f);
+        dayText.text = "День 1";
+        dayText.alignment = TextAnchor.MiddleLeft;
+
+        var dayRect = dayText.rectTransform;
+        dayRect.anchorMin = new Vector2(0f, 1f);
+        dayRect.anchorMax = new Vector2(0f, 1f);
+        dayRect.pivot = new Vector2(0f, 1f);
+        dayRect.sizeDelta = new Vector2(500f, 60f);
+        dayRect.anchoredPosition = new Vector2(30f, -24f);
     }
 
     private static Text CreateText(string name, Transform parent, int fontSize, Color color, float y)

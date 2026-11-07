@@ -1,11 +1,21 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// Объект, который подсвечивается автоматически, когда игрок рядом (зрелая морковь).
+/// Предмет, направление взгляда и курсор для этой подсветки не важны.
+/// </summary>
+public interface IAutoHighlight
+{
+    bool IsAutoHighlighted { get; }
+}
 
 /// <summary>
 /// Одна грядка. Хранит своё состояние S0-S4 и показывает его картинкой/цветом.
 /// Клетка-цель определяется положением объекта (центр грядки должен быть в центре клетки).
 /// </summary>
-public class FarmPlot : MonoBehaviour, IInteractable
+public class FarmPlot : MonoBehaviour, IInteractable, IAutoHighlight
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private PlotState startState = PlotState.Normal;
@@ -23,6 +33,17 @@ public class FarmPlot : MonoBehaviour, IInteractable
         new Color(0.55f, 0.75f, 1.00f), // S3 политый посев
         new Color(1.00f, 0.85f, 0.30f)  // S4 зрелая морковь
     };
+
+    private static readonly List<FarmPlot> AllPlots = new List<FarmPlot>();
+
+    /// <summary>Все включённые грядки сцены (нужны для сна).</summary>
+    public static IReadOnlyList<FarmPlot> All => AllPlots;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetOnPlay()
+    {
+        AllPlots.Clear();
+    }
 
     private Color baseColor = Color.white;
 
@@ -72,11 +93,27 @@ public class FarmPlot : MonoBehaviour, IInteractable
     {
         // Cell уже посчитана в Awake.
         InteractableRegistry.Register(this);
+
+        if (!AllPlots.Contains(this))
+            AllPlots.Add(this);
     }
 
     private void OnDisable()
     {
         InteractableRegistry.Unregister(this);
+        AllPlots.Remove(this);
+    }
+
+    /// <summary>Зрелую морковь подсвечиваем автоматически, когда игрок рядом.</summary>
+    public bool IsAutoHighlighted => State == PlotState.Mature;
+
+    /// <summary>Применить результат сна (его считает DayManager сразу для всех грядок).</summary>
+    public void ApplySleepResult(PlotState result)
+    {
+        if (result == PlotState.Mature)
+            seedWasSpent = false; // у зрелой моркови семя не возвращается
+
+        SetState(result);
     }
 
     private bool IsPlanted => State == PlotState.PlantedDry || State == PlotState.PlantedWatered;
@@ -102,6 +139,7 @@ public class FarmPlot : MonoBehaviour, IInteractable
             case PlotAction.Till: return "E — вспахать";
             case PlotAction.Plant: return "E — посадить";
             case PlotAction.Water: return IsPlanted ? "E — полить" : null;
+            case PlotAction.Harvest: return "E — собрать";
             case PlotAction.ClearTilled:
             case PlotAction.RemoveSeedling: return "E — убрать грядку";
             default: return null;
@@ -134,6 +172,13 @@ public class FarmPlot : MonoBehaviour, IInteractable
                 // Сухой посев становится политым; политый остаётся политым (роста нет).
                 if (State == PlotState.PlantedDry)
                     SetState(PlotState.PlantedWatered);
+                return null;
+
+            case PlotAction.Harvest:
+                // Сбор важнее инструмента: ни семя, ни вода не тратятся.
+                inventory.AddCarrot(); // ровно одна морковь прямо в запас
+                seedWasSpent = false;  // растение удалено, семя не возвращается
+                SetState(PlotState.Tilled); // грядка -> S1, можно сразу сажать
                 return null;
 
             case PlotAction.ClearTilled:

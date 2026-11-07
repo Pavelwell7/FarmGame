@@ -19,10 +19,24 @@ public static class GameInput
 #endif
     }
 
+    /// <summary>True только в кадре нажатия левой кнопки мыши (для кнопок окна сна).</summary>
+    public static bool LeftClickPressedThisFrame()
+    {
+#if ENABLE_INPUT_SYSTEM
+        Mouse mouse = Mouse.current;
+        return mouse != null && mouse.leftButton.wasPressedThisFrame;
+#else
+        return Input.GetMouseButtonDown(0);
+#endif
+    }
+
     /// <summary>True только в кадре нового нажатия E. Удержание не считается.</summary>
     public static bool InteractPressedThisFrame()
     {
-        // TODO этап 5: вернуть false, пока открыто окно сна.
+        // Пока открыто окно сна, действия в мире заблокированы.
+        if (InputGate.IsBlocked)
+            return false;
+
 #if ENABLE_INPUT_SYSTEM
         Keyboard kb = Keyboard.current;
         return kb != null && kb.eKey.wasPressedThisFrame;

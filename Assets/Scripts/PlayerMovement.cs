@@ -28,6 +28,10 @@ public class PlayerMovement : MonoBehaviour
     {
         direction = Vector2.zero;
 
+        // Пока открыто окно сна, персонаж стоит и не поворачивается.
+        if (InputGate.IsBlocked)
+            return;
+
 #if ENABLE_INPUT_SYSTEM
         Keyboard keyboard = Keyboard.current;
 

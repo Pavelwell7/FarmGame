@@ -79,15 +79,20 @@ public class FarmPlot : MonoBehaviour, IInteractable
         InteractableRegistry.Unregister(this);
     }
 
+    private bool IsPlanted => State == PlotState.PlantedDry || State == PlotState.PlantedWatered;
+
     /// <summary>
-    /// Рамка подсветки: обычная земля с мотыгой, свободная вспаханная с семенами.
+    /// Рамка подсветки: обычная земля с мотыгой, свободная вспаханная с семенами, посев с лейкой.
     /// Лопата рамку не даёт (по ТЗ), но текст действия показывается.
-    /// Наличие ресурса на рамку не влияет: при нуле семян рамка остаётся.
+    /// Полив пустой земли рамку и текст не даёт, но E при этом поливает (расходует воду).
+    /// Наличие ресурса на рамку не влияет: при нуле семян или воды рамка остаётся.
     /// </summary>
     public bool ShowsHighlight(InventoryModel inventory)
     {
         PlotAction action = PlotRules.Resolve(State, inventory.Selected);
-        return action == PlotAction.Till || action == PlotAction.Plant;
+        return action == PlotAction.Till
+            || action == PlotAction.Plant
+            || (action == PlotAction.Water && IsPlanted);
     }
 
     public string GetPrompt(InventoryModel inventory)
@@ -96,6 +101,7 @@ public class FarmPlot : MonoBehaviour, IInteractable
         {
             case PlotAction.Till: return "E — вспахать";
             case PlotAction.Plant: return "E — посадить";
+            case PlotAction.Water: return IsPlanted ? "E — полить" : null;
             case PlotAction.ClearTilled:
             case PlotAction.RemoveSeedling: return "E — убрать грядку";
             default: return null;
@@ -118,6 +124,16 @@ public class FarmPlot : MonoBehaviour, IInteractable
 
                 seedWasSpent = true;
                 SetState(PlotState.PlantedDry); // посев всегда сухой
+                return null;
+
+            case PlotAction.Water:
+                // Допустимое применение лейки расходует одну воду, даже на пустой земле.
+                if (!inventory.TrySpendWater())
+                    return "Лейка пуста";
+
+                // Сухой посев становится политым; политый остаётся политым (роста нет).
+                if (State == PlotState.PlantedDry)
+                    SetState(PlotState.PlantedWatered);
                 return null;
 
             case PlotAction.ClearTilled:

@@ -11,13 +11,14 @@ public enum PlotState
 }
 
 /// <summary>
-/// Что можно сделать с грядкой. Полив и сбор добавим на этапах 4-5.
+/// Что можно сделать с грядкой. Сбор добавим на этапе 5.
 /// </summary>
 public enum PlotAction
 {
     None,
     Till,           // вспахать: S0 -> S1
     Plant,          // посадить: S1 -> S2, семена минус 1
+    Water,          // лейка: S0/S1 вода -1; S2 -> S3 вода -1; S3 вода -1
     ClearTilled,    // лопата на S1: S1 -> S0, семена не выдаются
     RemoveSeedling  // лопата на S2/S3: -> S0, семя возвращается
 }
@@ -35,15 +36,18 @@ public static class PlotRules
         {
             case PlotState.Normal:
                 if (item == ItemType.Hoe) return PlotAction.Till;
+                if (item == ItemType.WateringCan) return PlotAction.Water; // полив пустой земли допустим
                 break;
 
             case PlotState.Tilled:
                 if (item == ItemType.Seeds) return PlotAction.Plant;
+                if (item == ItemType.WateringCan) return PlotAction.Water; // полив пустой грядки допустим
                 if (item == ItemType.Shovel) return PlotAction.ClearTilled;
                 break;
 
             case PlotState.PlantedDry:
             case PlotState.PlantedWatered:
+                if (item == ItemType.WateringCan) return PlotAction.Water;
                 if (item == ItemType.Shovel) return PlotAction.RemoveSeedling;
                 break;
         }

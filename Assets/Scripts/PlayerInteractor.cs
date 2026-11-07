@@ -1,5 +1,12 @@
 using UnityEngine;
 
+/// <summary>
+/// Выбор цели и действие по E.
+/// Цель - ровно одна соседняя клетка по направлению взгляда, при условиях:
+/// курсор на этой клетке, расстояние до её центра не больше maxDistance, между ногами и целью нет препятствия.
+/// Точка ног - transform.position персонажа (pivot картинки стоит у ног) или feetPoint, если задан.
+/// Направление берётся из PlayerMovement, предмет - из InventoryModel.
+/// </summary>
 public class PlayerInteractor : MonoBehaviour
 {
     [SerializeField] private InventoryModel inventory;
@@ -17,6 +24,7 @@ public class PlayerInteractor : MonoBehaviour
     private const float DistanceTolerance = 0.0001f;
 
     private Transform highlight;
+    private readonly GroundTarget groundTarget = new GroundTarget();
     private string debug = "";
     private GUIStyle debugStyle;
 
@@ -97,7 +105,15 @@ public class PlayerInteractor : MonoBehaviour
 
         IInteractable target = InteractableRegistry.Get(targetCell);
         if (target == null)
-            return Fail("в клетке-цели нет грядки");
+        {
+            // Нет грядки/колодца: возможно, это обычная земля (для случайного полива).
+            GroundArea ground = GroundArea.Find(center);
+            if (ground == null)
+                return Fail("в клетке-цели нет ни грядки, ни земли");
+
+            groundTarget.Set(targetCell, ground.transform);
+            target = groundTarget;
+        }
 
         if (IsBlocked(feet, center, target.Root))
             return Fail("между ногами и целью препятствие");

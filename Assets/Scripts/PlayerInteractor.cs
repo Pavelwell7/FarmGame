@@ -1,0 +1,316 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Выбор цели и действие по E.
+/// Цель - ровно одна соседняя клетка по направлению взгляда, при условиях:
+/// курсор на этой клетке, расстояние до её центра не больше maxDistance, между ногами и целью нет препятствия.
+/// Точка ног - transform.position персонажа (pivot картинки стоит у ног) или feetPoint, если задан.
+/// Направление берётся из PlayerMovement, предмет - из InventoryModel.
+/// Зрелая морковь в соседних по стороне клетках подсвечивается автоматически (без курсора и взгляда).
+/// </summary>
+public class PlayerInteractor : MonoBehaviour
+{
+    [SerializeField] private InventoryModel inventory;
+    [SerializeField] private PlayerMovement movement;
+    [SerializeField] private PromptHud promptHud;
+    [SerializeField] private Camera worldCamera;
+    [Tooltip("Необязательно. Если пусто, точка ног = позиция объекта.")]
+    [SerializeField] private Transform feetPoint;
+    [Tooltip("Слои, которые блокируют взаимодействие (стены, заборы).")]
+    [SerializeField] private LayerMask obstacleMask;
+    [SerializeField] private float maxDistance = 1.5f;
+    [Tooltip("Показывать в левом верхнем углу, почему цель найдена или не найдена.")]
+    [SerializeField] private bool showDebug = false;
+
+    private const float DistanceTolerance = 0.0001f;
+
+    private static readonly Direction4[] AllDirections =
+    {
+        Direction4.Up, Direction4.Down, Direction4.Left, Direction4.Right
+    };
+
+    private readonly GroundTarget groundTarget = new GroundTarget();
+    private readonly List<Transform> highlights = new List<Transform>();
+    private int highlightsUsed;
+    private Sprite frameSprite;
+    private string debug = "";
+    private GUIStyle debugStyle;
+
+    private Vector2 FeetPosition
+    {
+        get { return feetPoint != null ? (Vector2)feetPoint.position : (Vector2)transform.position; }
+    }
+
+    private void Start()
+    {
+        if (movement == null) movement = GetComponent<PlayerMovement>();
+        if (worldCamera == null) worldCamera = Camera.main;
+
+        if (inventory == null || movement == null || promptHud == null || worldCamera == null)
+        {
+            Debug.LogError("PlayerInteractor: не назначены Inventory, Movement, Prompt Hud или камера. Проверьте компонент в инспекторе.", this);
+            enabled = false;
+            return;
+        }
+
+        if (obstacleMask.value == 0)
+            Debug.LogWarning("PlayerInteractor: Obstacle Mask пуст, заборы и стены не будут блокировать действие.", this);
+
+        frameSprite = CreateFrameSprite();
+    }
+
+    private void OnDisable()
+    {
+        HideAll();
+    }
+
+    private void Update()
+    {
+        // Пока открыто окно (сон), мир не получает ввод и подсветки нет.
+        if (InputGate.IsBlocked)
+        {
+            HideAll();
+            return;
+        }
+
+        IInteractable target = FindTarget();
+
+        // Условия проверяются заново в момент нажатия.
+        if (target != null && GameInput.InteractPressedThisFrame())
+        {
+            string message = target.Interact(inventory);
+            if (!string.IsNullOrEmpty(message))
+                promptHud.ShowMessage(message);
+
+            // Действие могло открыть окно сна.
+            if (InputGate.IsBlocked)
+            {
+                HideAll();
+                return;
+            }
+
+            target = FindTarget(); // сразу обновить подсветку и текст
+        }
+
+        UpdatePresentation(target);
+    }
+
+    private IInteractable FindTarget()
+    {
+        Vector2 feet = FeetPosition;
+        Vector2Int feetCell = FarmGrid.WorldToCell(feet);
+        Vector2Int targetCell = feetCell + FarmGrid.DirectionToOffset(movement.Facing);
+
+        debug = "Ноги в клетке " + feetCell + ", взгляд: " + movement.Facing +
+                ", клетка-цель: " + targetCell + "\n";
+
+        // Курсор над панелью интерфейса: мир не получает действие.
+        Vector2 mouseScreen = GameInput.MouseScreenPosition();
+        if (PointerUi.IsOver(mouseScreen))
+            return Fail("курсор над панелью предметов");
+
+        // Курсор должен быть на клетке-цели.
+        Vector3 mouseWorld = worldCamera.ScreenToWorldPoint(
+            new Vector3(mouseScreen.x, mouseScreen.y, -worldCamera.transform.position.z));
+        Vector2Int mouseCell = FarmGrid.WorldToCell(mouseWorld);
+        debug += "Курсор на клетке " + mouseCell + "\n";
+        if (mouseCell != targetCell)
+            return Fail("курсор не на клетке-цели");
+
+        // Расстояние до центра клетки-цели.
+        Vector2 center = FarmGrid.CellCenter(targetCell);
+        float distance = Vector2.Distance(feet, center);
+        debug += "Расстояние до центра цели: " + distance.ToString("0.00") + "\n";
+        if (distance > maxDistance + DistanceTolerance)
+            return Fail("слишком далеко");
+
+        IInteractable target = InteractableRegistry.Get(targetCell);
+        if (target == null)
+        {
+            // Нет грядки/колодца/кровати: возможно, это обычная земля (для случайного полива).
+            GroundArea ground = GroundArea.Find(center);
+            if (ground == null)
+                return Fail("в клетке-цели нет ни грядки, ни земли");
+
+            groundTarget.Set(targetCell, ground.transform);
+            target = groundTarget;
+        }
+
+        if (IsBlocked(feet, center, target.Root))
+            return Fail("между ногами и целью препятствие");
+
+        debug += "ЦЕЛЬ НАЙДЕНА";
+        return target;
+    }
+
+    private IInteractable Fail(string reason)
+    {
+        debug += "Нет цели: " + reason;
+        return null;
+    }
+
+    private bool IsBlocked(Vector2 from, Vector2 to, Transform targetRoot)
+    {
+        RaycastHit2D[] hits = Physics2D.LinecastAll(from, to, obstacleMask);
+
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider == null)
+                continue;
+
+            Transform t = hit.collider.transform;
+
+            // Коллайдер самой цели и самого игрока не считаются препятствием.
+            if (t.IsChildOf(targetRoot) || t.IsChildOf(transform))
+                continue;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void UpdatePresentation(IInteractable target)
+    {
+        highlightsUsed = 0;
+
+        // 1. Автоподсветка зрелой моркови в соседних по стороне клетках в пределах дистанции.
+        Vector2 feet = FeetPosition;
+        Vector2Int feetCell = FarmGrid.WorldToCell(feet);
+
+        foreach (Direction4 direction in AllDirections)
+        {
+            Vector2Int cell = feetCell + FarmGrid.DirectionToOffset(direction);
+            IInteractable neighbor = InteractableRegistry.Get(cell);
+            IAutoHighlight auto = neighbor as IAutoHighlight;
+
+            if (auto == null || !auto.IsAutoHighlighted)
+                continue;
+
+            Vector2 center = FarmGrid.CellCenter(cell);
+            if (Vector2.Distance(feet, center) > maxDistance + DistanceTolerance)
+                continue;
+
+            if (IsBlocked(feet, center, neighbor.Root))
+                continue;
+
+            ShowHighlightAt(cell);
+        }
+
+        // 2. Рамка цели по предмету (вспашка, посадка, полив посева).
+        if (target != null && target.ShowsHighlight(inventory))
+            ShowHighlightAt(target.Cell);
+
+        for (int i = highlightsUsed; i < highlights.Count; i++)
+            highlights[i].gameObject.SetActive(false);
+
+        promptHud.SetPrompt(target != null ? target.GetPrompt(inventory) : null);
+    }
+
+    private void ShowHighlightAt(Vector2Int cell)
+    {
+        Vector2 position = FarmGrid.CellCenter(cell);
+
+        // Одна рамка на клетку, без дублей.
+        for (int i = 0; i < highlightsUsed; i++)
+        {
+            if ((Vector2)highlights[i].position == position)
+                return;
+        }
+
+        while (highlights.Count <= highlightsUsed)
+            highlights.Add(CreateHighlight());
+
+        Transform frame = highlights[highlightsUsed];
+        highlightsUsed++;
+
+        frame.position = position;
+        frame.gameObject.SetActive(true);
+    }
+
+    private void HideAll()
+    {
+        foreach (Transform frame in highlights)
+        {
+            if (frame != null)
+                frame.gameObject.SetActive(false);
+        }
+
+        highlightsUsed = 0;
+
+        if (promptHud != null)
+            promptHud.SetPrompt(null);
+    }
+
+    private Transform CreateHighlight()
+    {
+        var go = new GameObject("TargetHighlight");
+
+        var renderer = go.AddComponent<SpriteRenderer>();
+        renderer.sprite = frameSprite;
+        renderer.color = new Color(1f, 0.95f, 0.3f, 1f);
+        renderer.sortingOrder = 2;
+
+        go.SetActive(false);
+        return go.transform;
+    }
+
+    /// <summary>Квадратная рамка 1x1 единица, создаётся кодом, отдельный рисунок не нужен.</summary>
+    private static Sprite CreateFrameSprite()
+    {
+        const int size = 32;
+        const int border = 2;
+
+        var pixels = new Color32[size * size];
+        var white = new Color32(255, 255, 255, 255);
+        var clear = new Color32(0, 0, 0, 0);
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                bool edge = x < border || y < border || x >= size - border || y >= size - border;
+                pixels[y * size + x] = edge ? white : clear;
+            }
+        }
+
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.filterMode = FilterMode.Point;
+        texture.SetPixels32(pixels);
+        texture.Apply();
+
+        // pixelsPerUnit = size, значит спрайт ровно 1 x 1 единица.
+        return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+    }
+
+    private void OnGUI()
+    {
+        if (!showDebug)
+            return;
+
+        if (debugStyle == null)
+        {
+            debugStyle = new GUIStyle(GUI.skin.label);
+            debugStyle.fontSize = 20;
+            debugStyle.normal.textColor = Color.yellow;
+        }
+
+        GUI.Label(new Rect(10f, 70f, 1000f, 200f), debug, debugStyle);
+    }
+
+    // В окне Scene (персонаж выделен, идёт игра): жёлтая клетка-цель и линия от ног.
+    private void OnDrawGizmosSelected()
+    {
+        if (movement == null)
+            return;
+
+        Vector2 feet = FeetPosition;
+        Vector2Int cell = FarmGrid.WorldToCell(feet) + FarmGrid.DirectionToOffset(movement.Facing);
+        Vector2 center = FarmGrid.CellCenter(cell);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(feet, center);
+        Gizmos.DrawWireCube(center, Vector3.one);
+    }
+}

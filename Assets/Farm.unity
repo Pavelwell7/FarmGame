@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 64846656}
   - component: {fileID: 64846655}
   - component: {fileID: 64846657}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Vence_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -268,6 +268,7 @@ GameObject:
   m_Component:
   - component: {fileID: 277798496}
   - component: {fileID: 277798495}
+  - component: {fileID: 277798497}
   m_Layer: 0
   m_Name: plot_A
   m_TagString: Untagged
@@ -344,12 +345,38 @@ Transform:
   m_GameObject: {fileID: 277798494}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: -1, z: 0}
+  m_LocalPosition: {x: -3.5, y: -1.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &277798497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277798494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 277798495}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
 --- !u!1 &415889391
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,6 +387,7 @@ GameObject:
   m_Component:
   - component: {fileID: 415889393}
   - component: {fileID: 415889392}
+  - component: {fileID: 415889394}
   m_Layer: 0
   m_Name: plot_B
   m_TagString: Untagged
@@ -436,12 +464,38 @@ Transform:
   m_GameObject: {fileID: 415889391}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2, y: -1, z: 0}
+  m_LocalPosition: {x: -1.5, y: -1.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &415889394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415889391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 415889392}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
 --- !u!1 &432789405
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,7 +509,8 @@ GameObject:
   - component: {fileID: 432789409}
   - component: {fileID: 432789408}
   - component: {fileID: 432789411}
-  - component: {fileID: 432789410}
+  - component: {fileID: 432789412}
+  - component: {fileID: 432789413}
   m_Layer: 0
   m_Name: person
   m_TagString: Untagged
@@ -533,7 +588,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3, y: -2.5, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.9, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -572,7 +627,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.125}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -582,7 +637,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.4, y: 0.25}
   m_EdgeRadius: 0
 --- !u!50 &432789409
 Rigidbody2D:
@@ -611,19 +666,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &432789410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432789405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5794c190eb3b946159c73f90f6eb1d0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  speed: 4
 --- !u!114 &432789411
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,6 +679,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 4
+--- !u!114 &432789412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432789405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aea352c0ef4ebb4448e905664289a46a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisual
+  inventory: {fileID: 1877426634}
+  spriteSet: {fileID: 11400000, guid: f0db74d066c54a9488920778db8f031b, type: 2}
+  movement: {fileID: 432789411}
+  spriteRenderer: {fileID: 432789406}
+--- !u!114 &432789413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432789405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2ca857f24892d40b79a0f82c8279fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+  inventory: {fileID: 1877426634}
+  movement: {fileID: 0}
+  promptHud: {fileID: 1272376278}
+  worldCamera: {fileID: 0}
+  feetPoint: {fileID: 0}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
+  maxDistance: 1.5
+  showDebug: 0
 --- !u!1 &473341056
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,7 +728,7 @@ GameObject:
   - component: {fileID: 473341058}
   - component: {fileID: 473341057}
   - component: {fileID: 473341059}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fence_Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -787,7 +867,7 @@ GameObject:
   - component: {fileID: 489826061}
   - component: {fileID: 489826060}
   - component: {fileID: 489826062}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fence_bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1184,9 +1264,56 @@ Transform:
   m_LocalPosition: {x: -1.01, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2024546788}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &748157169
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 748157170}
+  - component: {fileID: 748157171}
+  m_Layer: 0
+  m_Name: GridGizmo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &748157170
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748157169}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.14209, y: 0.39207, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &748157171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748157169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb5596364d7a184b91bfe3a7201cfd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmGridGizmo
+  halfWidth: 20
+  halfHeight: 12
 --- !u!1 &975251353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1198,7 +1325,7 @@ GameObject:
   - component: {fileID: 975251355}
   - component: {fileID: 975251354}
   - component: {fileID: 975251356}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1336,6 +1463,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1016046435}
   - component: {fileID: 1016046434}
+  - component: {fileID: 1016046436}
   m_Layer: 0
   m_Name: plot_C
   m_TagString: Untagged
@@ -1412,12 +1540,100 @@ Transform:
   m_GameObject: {fileID: 1016046433}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6, y: -1, z: 0}
+  m_LocalPosition: {x: 0.5, y: -1.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1016046436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016046433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 1016046434}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
+--- !u!1 &1272376275
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1272376277}
+  - component: {fileID: 1272376276}
+  - component: {fileID: 1272376278}
+  m_Layer: 0
+  m_Name: HUB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1272376276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272376275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27274afee7782246a4c21a8ae0d235e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryHud
+  inventory: {fileID: 1877426634}
+  slotSize: 110
+  spacing: 12
+  bottomMargin: 24
+--- !u!4 &1272376277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272376275}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.78543, y: 1.01718, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1272376278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272376275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e4ae28668521fe47a6033956c935b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PromptHud
+  messageSeconds: 2
 --- !u!1 &1378852950
 GameObject:
   m_ObjectHideFlags: 0
@@ -1428,6 +1644,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1378852952}
   - component: {fileID: 1378852951}
+  - component: {fileID: 1378852953}
   m_Layer: 0
   m_Name: plot_D
   m_TagString: Untagged
@@ -1504,12 +1721,38 @@ Transform:
   m_GameObject: {fileID: 1378852950}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: 0.8, z: 0}
+  m_LocalPosition: {x: -3.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1378852953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378852950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 1378852951}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
 --- !u!1 &1438545256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1521,7 +1764,8 @@ GameObject:
   - component: {fileID: 1438545258}
   - component: {fileID: 1438545257}
   - component: {fileID: 1438545259}
-  m_Layer: 0
+  - component: {fileID: 1438545260}
+  m_Layer: 6
   m_Name: Bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1597,7 +1841,7 @@ Transform:
   m_GameObject: {fileID: 1438545256}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7, y: 3, z: 0}
+  m_LocalPosition: {x: -6.5, y: 3.5, z: 0}
   m_LocalScale: {x: 1.2, y: 2.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1649,6 +1893,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1438545260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438545256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e4a8c042edd8845b1900a67507b940, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bed
+  sleepDialog: {fileID: 2024546786}
+  interactionPoint: {fileID: 0}
 --- !u!1 &1506814448
 GameObject:
   m_ObjectHideFlags: 0
@@ -1751,6 +2009,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1525662128}
   - component: {fileID: 1525662127}
+  - component: {fileID: 1525662129}
   m_Layer: 0
   m_Name: plot_F
   m_TagString: Untagged
@@ -1827,12 +2086,38 @@ Transform:
   m_GameObject: {fileID: 1525662126}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6, y: 0.8, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1525662129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525662126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 1525662127}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
 --- !u!1 &1736764245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1844,7 +2129,7 @@ GameObject:
   - component: {fileID: 1736764247}
   - component: {fileID: 1736764246}
   - component: {fileID: 1736764248}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Vence_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1982,6 +2267,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1791680262}
   - component: {fileID: 1791680261}
+  - component: {fileID: 1791680263}
   m_Layer: 0
   m_Name: plot_E
   m_TagString: Untagged
@@ -2058,12 +2344,38 @@ Transform:
   m_GameObject: {fileID: 1791680260}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2, y: 0.8, z: 0}
+  m_LocalPosition: {x: -1.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1791680263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791680260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc42a26cb50814e90c0d038e33256a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  spriteRenderer: {fileID: 1791680261}
+  startState: 0
+  stateSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stateTints:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  - {r: 0.75, g: 1, b: 0.6, a: 1}
+  - {r: 0.55, g: 0.75, b: 1, a: 1}
+  - {r: 1, g: 0.85, b: 0.3, a: 1}
 --- !u!1 &1817676516
 GameObject:
   m_ObjectHideFlags: 0
@@ -2075,7 +2387,8 @@ GameObject:
   - component: {fileID: 1817676518}
   - component: {fileID: 1817676517}
   - component: {fileID: 1817676519}
-  m_Layer: 0
+  - component: {fileID: 1817676520}
+  m_Layer: 6
   m_Name: Well
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2151,7 +2464,7 @@ Transform:
   m_GameObject: {fileID: 1817676516}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: 0}
+  m_LocalPosition: {x: 4.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1.6, y: 1.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2203,6 +2516,140 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1817676520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817676516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4b5a8e976798a4b9f3d54fc7ec1d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Well
+  interactionPoint: {fileID: 0}
+--- !u!1 &1877426633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1877426636}
+  - component: {fileID: 1877426634}
+  - component: {fileID: 1877426635}
+  m_Layer: 0
+  m_Name: Inventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1877426634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877426633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4be4c5aa9d41284ebe93fee3a292645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryModel
+  startItem: 0
+  startSeeds: 5
+  startCarrots: 0
+  maxWater: 5
+  startWater: 5
+--- !u!114 &1877426635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877426633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d423c41af40fac4cac01c383bee829b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryInput
+--- !u!4 &1877426636
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877426633}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.78543, y: 1.01718, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2024546785
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2024546788}
+  - component: {fileID: 2024546787}
+  - component: {fileID: 2024546786}
+  m_Layer: 0
+  m_Name: Game
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2024546786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024546785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53665dd7510aad040acf5fd957d72400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SleepDialog
+  dayManager: {fileID: 2024546787}
+--- !u!114 &2024546787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024546785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf288795f75a5141ba0cdd917ab323e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DayManager
+  hud: {fileID: 1272376278}
+--- !u!4 &2024546788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024546785}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 630028031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2225,3 +2672,6 @@ SceneRoots:
   - {fileID: 1736764247}
   - {fileID: 432789407}
   - {fileID: 1506814450}
+  - {fileID: 1877426636}
+  - {fileID: 1272376277}
+  - {fileID: 748157170}

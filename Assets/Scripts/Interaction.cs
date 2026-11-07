@@ -18,8 +18,11 @@ public interface IInteractable
     /// <summary>Текст "E - ..." или null, если действия нет.</summary>
     string GetPrompt(InventoryModel inventory);
 
-    /// <summary>Выполнить одно действие. Если сочетание недопустимо, ничего не меняется.</summary>
-    void Interact(InventoryModel inventory);
+    /// <summary>
+    /// Выполнить одно действие. Если сочетание недопустимо, ничего не меняется.
+    /// Возвращает сообщение для игрока (например, "Нет семян") или null.
+    /// </summary>
+    string Interact(InventoryModel inventory);
 }
 
 /// <summary>

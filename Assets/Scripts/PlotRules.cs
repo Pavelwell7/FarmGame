@@ -11,25 +11,42 @@ public enum PlotState
 }
 
 /// <summary>
-/// Что можно сделать с грядкой. На этапе 2 только вспашка; остальное добавим на этапах 3-5.
+/// Что можно сделать с грядкой. Полив и сбор добавим на этапах 4-5.
 /// </summary>
 public enum PlotAction
 {
     None,
-    Till
+    Till,           // вспахать: S0 -> S1
+    Plant,          // посадить: S1 -> S2, семена минус 1
+    ClearTilled,    // лопата на S1: S1 -> S0, семена не выдаются
+    RemoveSeedling  // лопата на S2/S3: -> S0, семя возвращается
 }
 
 /// <summary>
 /// Таблица "состояние x предмет -> действие" из ТЗ (раздел 3).
 /// Чистая логика без Unity: удобно проверять тестами.
+/// Проверка наличия ресурса (есть ли семена) делается позже, при выполнении действия.
 /// </summary>
 public static class PlotRules
 {
     public static PlotAction Resolve(PlotState state, ItemType item)
     {
-        // Этап 2: мотыга на обычной земле. Остальное - в следующих этапах.
-        if (state == PlotState.Normal && item == ItemType.Hoe)
-            return PlotAction.Till;
+        switch (state)
+        {
+            case PlotState.Normal:
+                if (item == ItemType.Hoe) return PlotAction.Till;
+                break;
+
+            case PlotState.Tilled:
+                if (item == ItemType.Seeds) return PlotAction.Plant;
+                if (item == ItemType.Shovel) return PlotAction.ClearTilled;
+                break;
+
+            case PlotState.PlantedDry:
+            case PlotState.PlantedWatered:
+                if (item == ItemType.Shovel) return PlotAction.RemoveSeedling;
+                break;
+        }
 
         return PlotAction.None;
     }

@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Ставит выделенные объекты ровно в центр ближайшей клетки (x.5, y.5).
+/// Ставит выделенные объекты ровно в центр клетки, в которой они стоят (x.5, y.5).
 /// Меню: Farm -> Snap Selected To Cell Center. Файл лежит в папке Assets/Editor.
 /// </summary>
 public static class SnapToCellCenter
@@ -15,8 +15,8 @@ public static class SnapToCellCenter
             Undo.RecordObject(t, "Snap to cell center");
 
             Vector3 p = t.position;
-            p.x = (Mathf.Round(p.x - 0.5f) + 0.5f) * FarmGrid.CellSize;
-            p.y = (Mathf.Round(p.y - 0.5f) + 0.5f) * FarmGrid.CellSize;
+            p.x = (Mathf.Floor(p.x / FarmGrid.CellSize) + 0.5f) * FarmGrid.CellSize;
+            p.y = (Mathf.Floor(p.y / FarmGrid.CellSize) + 0.5f) * FarmGrid.CellSize;
             t.position = p;
         }
     }

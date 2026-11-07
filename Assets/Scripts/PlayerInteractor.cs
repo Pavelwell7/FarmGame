@@ -1,12 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Выбор цели и действие по E.
-/// Цель - ровно одна соседняя клетка по направлению взгляда, при условиях:
-/// курсор на этой клетке, расстояние до её центра не больше maxDistance, между ногами и целью нет препятствия.
-/// Точка ног - transform.position персонажа (pivot картинки стоит у ног) или feetPoint, если задан.
-/// Направление берётся из PlayerMovement, предмет - из InventoryModel.
-/// </summary>
 public class PlayerInteractor : MonoBehaviour
 {
     [SerializeField] private InventoryModel inventory;
@@ -18,10 +11,14 @@ public class PlayerInteractor : MonoBehaviour
     [Tooltip("Слои, которые блокируют взаимодействие (стены, заборы).")]
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float maxDistance = 1.5f;
+    [Tooltip("Показывать в левом верхнем углу, почему цель найдена или не найдена.")]
+    [SerializeField] private bool showDebug = false;
 
     private const float DistanceTolerance = 0.0001f;
 
     private Transform highlight;
+    private string debug = "";
+    private GUIStyle debugStyle;
 
     private Vector2 FeetPosition
     {
@@ -59,7 +56,10 @@ public class PlayerInteractor : MonoBehaviour
         // Условия проверяются заново в момент нажатия.
         if (target != null && GameInput.InteractPressedThisFrame())
         {
-            target.Interact(inventory);
+            string message = target.Interact(inventory);
+            if (!string.IsNullOrEmpty(message))
+                promptHud.ShowMessage(message);
+
             target = FindTarget(); // сразу обновить подсветку и текст
         }
 
@@ -72,30 +72,44 @@ public class PlayerInteractor : MonoBehaviour
         Vector2Int feetCell = FarmGrid.WorldToCell(feet);
         Vector2Int targetCell = feetCell + FarmGrid.DirectionToOffset(movement.Facing);
 
+        debug = "Ноги в клетке " + feetCell + ", взгляд: " + movement.Facing +
+                ", клетка-цель: " + targetCell + "\n";
+
         // Курсор над панелью интерфейса: мир не получает действие.
         Vector2 mouseScreen = GameInput.MouseScreenPosition();
         if (PointerUi.IsOver(mouseScreen))
-            return null;
+            return Fail("курсор над панелью предметов");
 
         // Курсор должен быть на клетке-цели.
         Vector3 mouseWorld = worldCamera.ScreenToWorldPoint(
             new Vector3(mouseScreen.x, mouseScreen.y, -worldCamera.transform.position.z));
-        if (FarmGrid.WorldToCell(mouseWorld) != targetCell)
-            return null;
+        Vector2Int mouseCell = FarmGrid.WorldToCell(mouseWorld);
+        debug += "Курсор на клетке " + mouseCell + "\n";
+        if (mouseCell != targetCell)
+            return Fail("курсор не на клетке-цели");
 
         // Расстояние до центра клетки-цели.
         Vector2 center = FarmGrid.CellCenter(targetCell);
-        if (Vector2.Distance(feet, center) > maxDistance + DistanceTolerance)
-            return null;
+        float distance = Vector2.Distance(feet, center);
+        debug += "Расстояние до центра цели: " + distance.ToString("0.00") + "\n";
+        if (distance > maxDistance + DistanceTolerance)
+            return Fail("слишком далеко");
 
         IInteractable target = InteractableRegistry.Get(targetCell);
         if (target == null)
-            return null;
+            return Fail("в клетке-цели нет грядки");
 
         if (IsBlocked(feet, center, target.Root))
-            return null;
+            return Fail("между ногами и целью препятствие");
 
+        debug += "ЦЕЛЬ НАЙДЕНА";
         return target;
+    }
+
+    private IInteractable Fail(string reason)
+    {
+        debug += "Нет цели: " + reason;
+        return null;
     }
 
     private bool IsBlocked(Vector2 from, Vector2 to, Transform targetRoot)
@@ -173,6 +187,21 @@ public class PlayerInteractor : MonoBehaviour
 
         // pixelsPerUnit = size, значит спрайт ровно 1 x 1 единица.
         return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+    }
+
+    private void OnGUI()
+    {
+        if (!showDebug)
+            return;
+
+        if (debugStyle == null)
+        {
+            debugStyle = new GUIStyle(GUI.skin.label);
+            debugStyle.fontSize = 20;
+            debugStyle.normal.textColor = Color.yellow;
+        }
+
+        GUI.Label(new Rect(10f, 10f, 1000f, 200f), debug, debugStyle);
     }
 
     // В окне Scene (персонаж выделен, идёт игра): жёлтая клетка-цель и линия от ног.

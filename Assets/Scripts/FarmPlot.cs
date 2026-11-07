@@ -14,7 +14,8 @@ public class FarmPlot : MonoBehaviour, IInteractable
     [SerializeField] private Sprite[] stateSprites = new Sprite[5];
 
     [Header("Оттенки S0-S4: множитель к исходному цвету грядки")]
-    [SerializeField] private Color[] stateTints =
+    [SerializeField]
+    private Color[] stateTints =
     {
         new Color(1.00f, 1.00f, 1.00f), // S0 обычная земля (как сейчас)
         new Color(0.55f, 0.55f, 0.55f), // S1 вспаханная (темнее)
@@ -24,6 +25,10 @@ public class FarmPlot : MonoBehaviour, IInteractable
     };
 
     private Color baseColor = Color.white;
+
+    // True, если в этой грядке лежит семя, которое реально было списано при посадке.
+    // Только за такое семя лопата возвращает одно семя.
+    private bool seedWasSpent;
 
     public PlotState State { get; private set; }
     public Vector2Int Cell { get; private set; }
@@ -59,6 +64,7 @@ public class FarmPlot : MonoBehaviour, IInteractable
         }
 
         State = startState;
+        seedWasSpent = false;
         ApplyVisual();
     }
 
@@ -73,9 +79,15 @@ public class FarmPlot : MonoBehaviour, IInteractable
         InteractableRegistry.Unregister(this);
     }
 
+    /// <summary>
+    /// Рамка подсветки: обычная земля с мотыгой, свободная вспаханная с семенами.
+    /// Лопата рамку не даёт (по ТЗ), но текст действия показывается.
+    /// Наличие ресурса на рамку не влияет: при нуле семян рамка остаётся.
+    /// </summary>
     public bool ShowsHighlight(InventoryModel inventory)
     {
-        return PlotRules.Resolve(State, inventory.Selected) != PlotAction.None;
+        PlotAction action = PlotRules.Resolve(State, inventory.Selected);
+        return action == PlotAction.Till || action == PlotAction.Plant;
     }
 
     public string GetPrompt(InventoryModel inventory)
@@ -83,20 +95,46 @@ public class FarmPlot : MonoBehaviour, IInteractable
         switch (PlotRules.Resolve(State, inventory.Selected))
         {
             case PlotAction.Till: return "E — вспахать";
-            default:              return null;
+            case PlotAction.Plant: return "E — посадить";
+            case PlotAction.ClearTilled:
+            case PlotAction.RemoveSeedling: return "E — убрать грядку";
+            default: return null;
         }
     }
 
-    public void Interact(InventoryModel inventory)
+    public string Interact(InventoryModel inventory)
     {
         switch (PlotRules.Resolve(State, inventory.Selected))
         {
             case PlotAction.Till:
                 SetState(PlotState.Tilled); // вспашка ничего не расходует
-                break;
+                return null;
+
+            case PlotAction.Plant:
+                // Списание семени и появление посева - одно действие:
+                // нет семени - ничего не меняем, есть - списали и посадили сразу.
+                if (!inventory.TrySpendSeed())
+                    return "Нет семян";
+
+                seedWasSpent = true;
+                SetState(PlotState.PlantedDry); // посев всегда сухой
+                return null;
+
+            case PlotAction.ClearTilled:
+                SetState(PlotState.Normal); // семена не выдаются
+                return null;
+
+            case PlotAction.RemoveSeedling:
+                // Возврат одного семени только за фактически посаженное.
+                if (seedWasSpent)
+                    inventory.AddSeeds(1);
+
+                seedWasSpent = false; // данные посева очищены
+                SetState(PlotState.Normal);
+                return null;
 
             default:
-                break; // недопустимое сочетание: ничего не меняется, ошибки нет
+                return null; // недопустимое сочетание: ничего не меняется, ошибки нет
         }
     }
 

@@ -23,6 +23,7 @@ public class InventoryHud : MonoBehaviour
     }
 
     private Slot[] slots;
+    private RectTransform panelRect;
 
     private static readonly string[] Names = { "Мотыга", "Семена", "Лейка", "Лопата", "Морковь" };
 
@@ -56,6 +57,7 @@ public class InventoryHud : MonoBehaviour
     private void OnDestroy()
     {
         if (inventory != null) inventory.Changed -= Refresh;
+        PointerUi.Unregister(panelRect);
     }
 
     private void BuildUi()
@@ -83,6 +85,10 @@ public class InventoryHud : MonoBehaviour
         panel.pivot = new Vector2(0.5f, 0f);
         panel.sizeDelta = new Vector2(totalWidth, slotSize);
         panel.anchoredPosition = new Vector2(0f, bottomMargin);
+
+        // Над панелью E не должна действовать на объекты мира.
+        panelRect = panel;
+        PointerUi.Register(panelRect);
 
         slots = new Slot[n];
 
